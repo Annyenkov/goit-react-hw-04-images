@@ -4,6 +4,7 @@ import Searchbar from "components/Searchbar";
 import api from "services/pixabay-api";
 import Button from "components/Button/Button";
 import { InfinitySpin } from  'react-loader-spinner'
+import { AppStyled } from "./App.styled";
 
 class App extends Component {
   state = {
@@ -53,7 +54,7 @@ class App extends Component {
   render() {
     const {cards, visible, loading} = this.state
     return (
-      <>
+      <AppStyled>
         <Searchbar onSubmit={this.onSubmit} />
         <ImageGallery cards={cards} />
         {loading && <InfinitySpin 
@@ -61,7 +62,7 @@ class App extends Component {
           color="#4fa94d"
         />}
         {visible && <Button onClick={this.onLoadMore} />}
-      </>
+      </AppStyled>
       )
     }
 

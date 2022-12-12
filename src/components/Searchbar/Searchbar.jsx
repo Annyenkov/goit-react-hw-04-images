@@ -1,6 +1,7 @@
 import React from "react";
 import { Field, Form, Formik } from 'formik';
-import { Header } from "./Searchbar.styled";
+import { Header, InputButton } from "./Searchbar.styled";
+import PropTypes from "prop-types";
 
 const SearchBar = ({onSubmit}) => {
   const onSubmitHandle = (values, actions) => {
@@ -11,9 +12,9 @@ const SearchBar = ({onSubmit}) => {
     <Header>
       <Formik initialValues={{ text: '' }} onSubmit={onSubmitHandle}>
         <Form>
-         <button type="submit">
+         <InputButton type="submit">
            <span>Search</span>
-         </button>
+         </InputButton>
          <Field
             type="text"
             name="text"
@@ -25,6 +26,10 @@ const SearchBar = ({onSubmit}) => {
       </Formik>
     </Header>
   )
+}
+
+SearchBar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 }
 
 export default SearchBar
