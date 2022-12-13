@@ -15,12 +15,12 @@ class ImageGalleryItems extends Component {
   }
 
   render() {
-    const { url, modalImg } = this.props
+    const { url, modalImg, tags } = this.props
     const {isModalOpen} = this.state
     return (
       <>
         <Item>
-          <Img src={url} alt="" onClick={this.toggleModal}/>
+          <Img src={url} alt={tags} onClick={this.toggleModal}/>
         </Item>
         {isModalOpen && <Modal modalImg={modalImg} onClose={this.toggleModal} />}
       </>

@@ -5,9 +5,9 @@ import PropTypes from "prop-types";
 function ImageGallery ({cards}) {
   return (
     <List className="gallery ImageGallery">
-      {cards.map(({id, webformatURL, largeImageURL}) => {
+      {cards.map(({id, webformatURL, largeImageURL, tags}) => {
         return (
-          <ImageGalleryItem key={id} url={webformatURL} modalImg={largeImageURL} />
+          <ImageGalleryItem key={id} url={webformatURL} modalImg={largeImageURL} tags={tags} />
         )
       })}
     </List>
@@ -19,6 +19,7 @@ ImageGallery.propTypes = {
     id: PropTypes.number.isRequired,
     webformatURL: PropTypes.string.isRequired,
     largeImageURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
   }),),
 }
 

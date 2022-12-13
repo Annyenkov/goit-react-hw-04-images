@@ -19,6 +19,7 @@ class App extends Component {
     const {text: prevText, page: firstPage} = prevState;
     const { text: nextText, page: nextPage } = this.state;
     if (prevText !== nextText || firstPage !== nextPage) {
+      this.setState({ visible: false });
       this.setState({ loading: true });
       try {
         const fetchCards = await api.fetchPixabay(nextText, nextPage)
@@ -29,11 +30,14 @@ class App extends Component {
             visible: false
           }))
         }
-        this.setState(({ cards, visible }) => ({
-          cards: [...cards, ...newCards],
-          visible: true,
-        }));
-      } catch (error) {
+        newCards.forEach(
+          ({ id, webformatURL, largeImageURL, tags }) => {
+            return this.setState(({ cards }) => ({
+              cards: [...cards, { id, webformatURL, largeImageURL, tags }],
+              visible: true,
+            }));
+          }
+         )} catch (error) {
         console.log("ogo")
       } finally {
         this.setState({ loading: false });
@@ -48,7 +52,7 @@ class App extends Component {
   };
 
   onSubmit = e => {
-    this.setState({ text: e, cards: [] })
+    this.setState({ text: e, cards: [], page: 1 })
   }
 
   render() {
@@ -56,7 +60,7 @@ class App extends Component {
     return (
       <AppStyled>
         <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery cards={cards} />
+        {cards.length > 0 && <ImageGallery cards={cards} />}
         {loading && <InfinitySpin 
           width='200'
           color="#4fa94d"
