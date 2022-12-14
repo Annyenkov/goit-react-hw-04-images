@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import ImageGallery from "components/ImageGallery";
 import Searchbar from "components/Searchbar";
 import api from "services/pixabay-api";
@@ -6,71 +6,57 @@ import Button from "components/Button/Button";
 import { InfinitySpin } from  'react-loader-spinner'
 import { AppStyled } from "./App.styled";
 
-class App extends Component {
-  state = {
-    text: '',
-    cards: [],
-    page: 1,
-    visible: false,
-    loading: false,
-  }
+const App = () => {
+  const [text, setText] = useState('');
+  const [cards, setCards] = useState([]);
+  const [page, setPage] = useState(1);
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async componentDidUpdate(prevProps, prevState) {
-    const {text: prevText, page: firstPage} = prevState;
-    const { text: nextText, page: nextPage } = this.state;
-    if (prevText !== nextText || firstPage !== nextPage) {
-      this.setState({ visible: false });
-      this.setState({ loading: true });
+  useEffect(() => {
+    if (text === '') {
+      return
+    }
+    setLoading(true)
+    async function fetchCards(text, page) {
       try {
-        const fetchCards = await api.fetchPixabay(nextText, nextPage)
+        const fetchCards = await api.fetchPixabay(text, page)
         const newCards = fetchCards.hits
-        if (fetchCards.total === this.state.cards.length || newCards.length === 0) {
-          alert('sdsda')
-          return this.setState(({ visible }) => ({
-            visible: false
-          }))
+        if (newCards.length === 0) {
+          alert('нет изображений')
+          setVisible(false)
+          return
         }
         newCards.forEach(
           ({ id, webformatURL, largeImageURL, tags }) => {
-            return this.setState(({ cards }) => ({
-              cards: [...cards, { id, webformatURL, largeImageURL, tags }],
-              visible: true,
-            }));
-          }
-         )} catch (error) {
-        console.log("ogo")
+            setCards(prevCards =>[...prevCards, { id, webformatURL, largeImageURL, tags }]);
+          })
+        setVisible(true)
+      } catch (error) {
+        alert(' нет изображений')
       } finally {
-        this.setState({ loading: false });
+        setLoading(false)
       }
     }
+    fetchCards(text, page)
+  }, [text, page])
+  const onLoadMore = () => setPage(prevPage => prevPage + 1)
+  const onSubmit = e => {
+    setCards([]);
+    setText(e);
+    setPage(1);
   }
-
-  onLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
-
-  onSubmit = e => {
-    this.setState({ text: e, cards: [], page: 1 })
-  }
-
-  render() {
-    const {cards, visible, loading} = this.state
-    return (
+  return (
       <AppStyled>
-        <Searchbar onSubmit={this.onSubmit} />
+        <Searchbar onSubmit={onSubmit} />
         {cards.length > 0 && <ImageGallery cards={cards} />}
         {loading && <InfinitySpin 
           width='200'
           color="#4fa94d"
         />}
-        {visible && <Button onClick={this.onLoadMore} />}
+        {visible && <Button onClick={onLoadMore} />}
       </AppStyled>
       )
-    }
-
-};
-
+}
 
 export default App;

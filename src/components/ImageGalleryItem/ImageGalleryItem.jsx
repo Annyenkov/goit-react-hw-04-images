@@ -1,31 +1,33 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import Modal from "components/Modal";
 import { Img, Item } from "./ImageGalleryItem.styled";
 
-
-class ImageGalleryItems extends Component {
-  state = {
-    isModalOpen: false,
-  }
-
-  toggleModal = () => {
-    this.setState(({ isModalOpen }) => ({
-      isModalOpen: !isModalOpen,
-    }))
-  }
-
-  render() {
-    const { url, modalImg, tags } = this.props
-    const {isModalOpen} = this.state
-    return (
-      <>
-        <Item>
-          <Img src={url} alt={tags} onClick={this.toggleModal}/>
-        </Item>
-        {isModalOpen && <Modal modalImg={modalImg} onClose={this.toggleModal} />}
-      </>
-    )
-  }
-} 
+const ImageGalleryItems = ({url, modalImg, tags}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const toggleModal = () => setIsModalOpen(!isModalOpen)
+  
+  useEffect(() => {
+    if (isModalOpen === false) {
+      return
+    }
+    const onEscClose = e => {
+      if (e.code === 'Escape') {
+        setIsModalOpen(false)
+      }
+    }
+    window.addEventListener('keydown', onEscClose);
+    return () => {
+      window.removeEventListener('keydown', onEscClose);
+    }
+  }, [isModalOpen])
+  return (
+    <>
+      <Item>
+        <Img src={url} alt={tags} onClick={toggleModal}/>
+      </Item>
+      {isModalOpen && <Modal modalImg={modalImg} onClose={toggleModal} />}
+    </>
+  )
+}
 
 export default ImageGalleryItems
